@@ -1,0 +1,4 @@
+[submodule "repos/home-teacher-common"]
+	path = repos/home-teacher-common
+	url = https://github.com/ThousandsOfTies/home-teacher-common.git
+	branch = main

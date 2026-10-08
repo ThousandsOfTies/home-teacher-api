@@ -1,0 +1,29 @@
+name: API checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Check API behavior and isolated deployment sources
+        run: npm test
+      - name: Prepare Cloud Run sources
+        run: npm run prepare:deploy
+      - name: Build runtime image
+        run: docker build -t home-teacher-api-check .cloud-run

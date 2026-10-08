@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.cloud-run/
+.env
+.env.*
+!.env.example
+credentials/
+credentials.json
+**/*adminsdk*.json
+**/*adminsdk*.json:Zone.Identifier
+*.log
+.DS_Store
