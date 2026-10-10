@@ -33,7 +33,7 @@ for (const mode of ['source', 'compiled']) {
       path.join(isolatedServer, 'repos/home-teacher-common/package.json'))
     copyFileSync(path.join(serverRoot, 'package.json'), path.join(isolatedServer, 'package.json'))
     copyFileSync(path.join(serverRoot, 'tsconfig.json'), path.join(isolatedServer, 'tsconfig.json'))
-    for (const name of ['index.ts', 'bookKnowledgeRoutes.ts', 'bookAgent.ts', 'bookReferenceMedia.ts', 'runtimePaths.ts']) {
+    for (const name of ['index.ts', 'bookKnowledgeRoutes.ts', 'bookAgent.ts', 'bookReferenceMedia.ts', 'runtimePaths.ts', 'gradingAnswers.ts']) {
       copyFileSync(path.join(serverRoot, 'src', name), path.join(isolatedServer, 'src', name))
     }
     mkdirSync(path.join(isolatedServer, 'contracts'), { recursive: true })

@@ -11,7 +11,7 @@ const npmCli = process.env.npm_execpath || path.join(path.dirname(process.execPa
 const files = [
   'Dockerfile', 'package.json', 'package-lock.json', 'tsconfig.json',
   'src/index.ts', 'src/bookKnowledgeRoutes.ts', 'src/bookAgent.ts',
-  'src/bookReferenceMedia.ts', 'src/runtimePaths.ts', 'contracts/bookAgentProtocol.ts',
+  'src/bookReferenceMedia.ts', 'src/runtimePaths.ts', 'src/gradingAnswers.ts', 'contracts/bookAgentProtocol.ts',
   'repos/home-teacher-common/src/constants/grading.ts',
   'repos/home-teacher-common/src/i18n/locales/ja.json', 'repos/home-teacher-common/src/i18n/locales/en.json',
 ]

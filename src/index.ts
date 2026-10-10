@@ -4,6 +4,7 @@ import { GoogleGenAI, ThinkingLevel } from '@google/genai'
 import { registerBookKnowledgeRoutes } from './bookKnowledgeRoutes.ts'
 import { AVAILABLE_MODELS, DEFAULT_MODEL_ID, SUBJECTS, buildGradingPrompt } from '../repos/home-teacher-common/src/constants/grading.ts'
 import { loadServerEnvironment, resolveConfigFile } from './runtimePaths.ts'
+import { validateAndOverrideGrading } from './gradingAnswers.ts'
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -65,41 +66,6 @@ const authenticateUser = async (req: express.Request, res: express.Response, nex
     res.status(401).json({ error: 'Unauthorized: Invalid token' });
   }
 };
-
-// 文字列の正規化と一致判定を行う関数
-function validateAndOverrideGrading(student: string, correct: string): boolean {
-  if (!student || !correct) return false;
-
-  const normalize = (str: string) => {
-    return str
-      .trim()
-      .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xFEE0))
-      .replace(/\s+/g, '')
-      .replace(/[、。\.．]$/, '')
-      .replace(/(です|ます|だ)$/, '')
-      .toLowerCase();
-  };
-
-  const normStudent = normalize(student);
-  const normCorrect = normalize(correct);
-
-  if (normStudent === normCorrect) return true;
-
-  const numStudent = parseFloat(normStudent);
-  const numCorrect = parseFloat(normCorrect);
-  if (!isNaN(numStudent) && !isNaN(numCorrect) && Math.abs(numStudent - numCorrect) < 0.0001) {
-    return true;
-  }
-
-  if ((normStudent.includes(normCorrect) || normCorrect.includes(normStudent)) && !isNaN(numCorrect)) {
-    const removeUnit = (s: string) => s.replace(/[^0-9\.]/g, '');
-    if (removeUnit(normStudent) === removeUnit(normCorrect) && removeUnit(normStudent).length > 0) {
-      return true;
-    }
-  }
-
-  return false;
-}
 
 const app = express()
 const port = process.env.PORT || 3003
