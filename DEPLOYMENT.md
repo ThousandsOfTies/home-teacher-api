@@ -13,12 +13,23 @@ npm run deploy:staging
 npm run deploy:production
 ```
 
-Google Cloud CLIでプロジェクト `hometeacher-api` への認証・公開権限が必要。
+Google Cloud CLI 587.0.0以降でプロジェクト `hometeacher-api` への認証・公開権限が必要。
 stagingは `hometeacher-api-staging`、本番は `hometeacher-api`、リージョンは `asia-northeast1`。
 未コミットの変更を拒否し、必要なソースだけを `.cloud-run` に生成する。
 既存サービスの環境変数・Secret Manager参照・サービスアカウント・リソース・スケール設定を保持する。
 各リビジョンに `source-repository=home-teacher-api` と `git-sha=<40桁のコミット>` を付ける。
+`cloudbuild.yaml` の `options.workerRelease: regular` でイメージをビルドし、成功したイメージのSHA256ダイジェストを指定して公開する。
+Docker BuildKitが対応しない `docker build --network cloudbuild` を生成する `gcloud run deploy --source` は使用しない。
+ビルドに失敗した場合は公開を行わない。ビルド用サービスアカウントは既存のCompute Engineデフォルトアカウントを使用する。
 アプリの旧公開コマンドは、APIリポジトリの手順を案内して停止する。
+
+Cloud Runを変更せずにビルドだけ確認する場合：
+
+```sh
+npm run deploy:staging -- --build-only
+```
+
+リリースチャンネルの仕様は [Cloud Build公式ドキュメント](https://docs.cloud.google.com/build/docs/release-channels) を参照。
 
 ## 動作の確認
 
