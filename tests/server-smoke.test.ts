@@ -33,7 +33,7 @@ for (const mode of ['source', 'compiled']) {
       path.join(isolatedServer, 'repos/home-teacher-common/package.json'))
     copyFileSync(path.join(serverRoot, 'package.json'), path.join(isolatedServer, 'package.json'))
     copyFileSync(path.join(serverRoot, 'tsconfig.json'), path.join(isolatedServer, 'tsconfig.json'))
-    for (const name of ['index.ts', 'bookKnowledgeRoutes.ts', 'bookAgent.ts', 'bookReferenceMedia.ts', 'runtimePaths.ts', 'gradingAnswers.ts']) {
+    for (const name of ['index.ts', 'bookKnowledgeRoutes.ts', 'bookAgent.ts', 'bookReferenceMedia.ts', 'runtimePaths.ts', 'gradingAnswers.ts', 'liveTokens.ts']) {
       copyFileSync(path.join(serverRoot, 'src', name), path.join(isolatedServer, 'src', name))
     }
     mkdirSync(path.join(isolatedServer, 'contracts'), { recursive: true })
@@ -80,6 +80,8 @@ for (const mode of ['source', 'compiled']) {
     assert.equal(models.default, 'gemini-layout-test')
     assert.ok(models.models.some((model: { id: string }) => model.id === 'gemini-3.8-flash'))
     assert.equal((await fetch(`${base}/api/subjects`)).status, 200)
+    assert.equal((await fetch(`${base}/api/live/token`, { method: 'POST',
+      headers: { 'Content-Type': 'application/json' }, body: '{}' })).status, 401)
     for (const endpoint of ['/api/grade-work', '/api/book/embed',
       '/api/book/read-question', '/api/book/ask', '/api/book/ask-agent', '/api/book/reference-media']) {
       const response = await fetch(`${base}${endpoint}`, {

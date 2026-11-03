@@ -5,6 +5,7 @@ import { registerBookKnowledgeRoutes } from './bookKnowledgeRoutes.ts'
 import { AVAILABLE_MODELS, DEFAULT_MODEL_ID, SUBJECTS, buildGradingPrompt } from '../repos/home-teacher-common/src/constants/grading.ts'
 import { loadServerEnvironment, resolveConfigFile } from './runtimePaths.ts'
 import { validateAndOverrideGrading } from './gradingAnswers.ts'
+import { firestoreTokenQuota, registerLiveTokenRoute } from './liveTokens.ts'
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -69,6 +70,11 @@ const authenticateUser = async (req: express.Request, res: express.Response, nex
 
 const app = express()
 const port = process.env.PORT || 3003
+
+// Authenticate and bound Live requests before the larger worksheet JSON parser.
+registerLiveTokenRoute(app, {
+  authTokens: { create: parameters => ai.authTokens.create(parameters) },
+}, { quota: () => firestoreTokenQuota(admin.firestore()) })
 
 app.use((req, res, next) => {
   if (req.originalUrl === '/api/webhooks/stripe') {
