@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
 import test from 'node:test'
 import express from 'express'
+import { GoogleGenAI } from '@google/genai'
 import { firestoreTokenQuota, registerLiveTokenRoute } from '../src/liveTokens.ts'
 
 const secret = 'a'.repeat(43), deviceId = 'robot-one'
@@ -56,6 +57,28 @@ test('authenticated devices get one-use, model-restricted short-lived credential
   assert.equal(f.requests[0].config.uses, 1)
   assert.equal(f.requests[0].config.httpOptions.timeout, 15_000)
   assert.ok(!JSON.stringify(result).includes(secret))
+})
+
+test('the pinned SDK locks model and audio while allowing App instructions and tools', async t => {
+  const f = await fixture(t)
+  assert.equal((await f.send()).status, 200)
+  let wire: any
+  const provider = express()
+  provider.use(express.json())
+  provider.post('/v1alpha/auth_tokens', (req, res) => {
+    wire = req.body
+    res.json({ name: 'auth_tokens/test-only' })
+  })
+  const server = provider.listen(0, '127.0.0.1')
+  await new Promise<void>(resolve => server.once('listening', resolve))
+  t.after(() => new Promise<void>(resolve => server.close(() => resolve())))
+  const client = new GoogleGenAI({ apiKey: 'test-only', httpOptions: {
+    apiVersion: 'v1alpha', baseUrl: `http://127.0.0.1:${(server.address() as any).port}`,
+  } })
+  await client.authTokens.create(f.requests[0])
+  assert.equal(wire.bidiGenerateContentSetup.model, 'models/gemini-3.8-live')
+  assert.deepEqual(wire.bidiGenerateContentSetup.generationConfig.responseModalities, ['AUDIO'])
+  assert.deepEqual(wire.fieldMask.split(',').sort(), ['generationConfig.responseModalities', 'model'])
 })
 
 test('bad, revoked and unconfigured credentials cannot cause a provider or quota call', async t => {

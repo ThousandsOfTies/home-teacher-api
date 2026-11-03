@@ -38,6 +38,10 @@ The response has `token`, `model`, `apiVersion`, `expiresAt` and
 valid for at most 30 minutes, with 60 seconds to begin the session. The pinned
 Google SDK's `v1alpha` constrained Live endpoint is used. This experimental API
 must be checked against the actual Google service when updating the SDK/model.
+Token creation explicitly uses `lockAdditionalFields: []`: only the model and
+audio response modality are locked. App-owned instructions, voice, tools and
+transcription settings come from the client session setup. Omitting this option
+locks unset fields too, so the provider can ignore the App's configuration.
 
 Firestore collection `liveTokenUsage` implements atomic per-device limits of
 4 token requests per minute and 30 per hour across Cloud Run instances. This is

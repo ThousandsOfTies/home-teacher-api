@@ -60,6 +60,9 @@ export function registerLiveTokenRoute(app: express.Express, issuer: TokenIssuer
         httpOptions: { apiVersion: 'v1alpha', timeout: 15_000 }, uses: 1,
         expireTime: expiresAt, newSessionExpireTime: newSessionExpiresAt,
         liveConnectConstraints: { model, config: { responseModalities: ['AUDIO'] } },
+        // Without an explicit subset the provider also locks unset fields,
+        // silently discarding the App's instructions, voice and tool setup.
+        lockAdditionalFields: [],
       } })
       if (!token.name?.startsWith('auth_tokens/') || token.name.length > 8192) throw new Error('Invalid token')
       res.json({ token: token.name, model, apiVersion: 'v1alpha', expiresAt, newSessionExpiresAt })
