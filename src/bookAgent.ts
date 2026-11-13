@@ -1,6 +1,7 @@
+import { getOptionalThinkingConfig } from './modelThinking.ts'
 import { createCipheriv, createDecipheriv, createHash, randomBytes, randomUUID } from 'node:crypto'
 import type { Express } from 'express'
-import { FunctionCallingConfigMode, ThinkingLevel, type Content, type FunctionDeclaration, type GoogleGenAI } from '@google/genai'
+import { FunctionCallingConfigMode, type Content, type FunctionDeclaration, type GoogleGenAI } from '@google/genai'
 import { BOOK_AGENT_LIMITS, isBookContextRequest, type BookAgentQuestion, type BookContextRequest,
   type BookContextResult } from '../contracts/bookAgentProtocol.ts'
 
@@ -161,7 +162,7 @@ export function registerBookAgentRoute(app: Express, ai: GoogleGenAI, defaultMod
     const start = Date.now()
     try {
       const response = await ai.models.generateContent({ model: question.model!, contents, config: {
-        ...(question.model!.startsWith('gemini-3') ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } } : {}),
+        ...(getOptionalThinkingConfig(question.model!)),
         maxOutputTokens: 4096,
         httpOptions: { timeout: 50_000 },
         tools: [{ functionDeclarations: toolDeclarations.filter(tool => question.clientCapabilities.some(name => name === tool.name)) }],

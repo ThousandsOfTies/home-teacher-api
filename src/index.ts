@@ -1,6 +1,7 @@
+import { getThinkingConfig } from './modelThinking.ts'
 import express from 'express'
 import cors from 'cors'
-import { GoogleGenAI, ThinkingLevel } from '@google/genai'
+import { GoogleGenAI } from '@google/genai'
 import { registerBookKnowledgeRoutes } from './bookKnowledgeRoutes.ts'
 import { AVAILABLE_MODELS, DEFAULT_MODEL_ID, SUBJECTS, buildGradingPrompt } from '../repos/home-teacher-common/src/constants/grading.ts'
 import { loadServerEnvironment, resolveConfigFile } from './runtimePaths.ts'
@@ -94,11 +95,6 @@ if (!process.env.GEMINI_API_KEY) {
 // Google GenAI クライアント初期化
 const MODEL_NAME = process.env.GEMINI_MODEL || DEFAULT_MODEL_ID
 console.log(`Using Gemini Model: ${MODEL_NAME}`)
-
-// Gemini 3 uses thinking levels; 2.5 Pro cannot disable thinking.
-const getThinkingConfig = (model: string) => model.startsWith('gemini-3')
-  ? { thinkingLevel: ThinkingLevel.LOW }
-  : { thinkingBudget: model.startsWith('gemini-2.5-pro') ? 128 : 0 }
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' })
 registerBookKnowledgeRoutes(app, ai, MODEL_NAME)

@@ -6,7 +6,7 @@ const apiRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const output = path.resolve(apiRoot, '.cloud-run')
 const files = [
   'Dockerfile', 'package.json', 'package-lock.json', 'tsconfig.json',
-  'src/index.ts', 'src/bookKnowledgeRoutes.ts', 'src/bookAgent.ts',
+  'src/modelThinking.ts', 'src/index.ts', 'src/bookKnowledgeRoutes.ts', 'src/bookAgent.ts',
   'src/bookReferenceMedia.ts', 'src/runtimePaths.ts', 'src/gradingAnswers.ts', 'src/liveTokens.ts',
   'contracts/bookAgentProtocol.ts',
   'repos/home-teacher-common/src/constants/grading.ts',

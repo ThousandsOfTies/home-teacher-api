@@ -1,6 +1,7 @@
+import { getOptionalThinkingConfig } from './modelThinking.ts'
 // Book-reading endpoints are also included in TutoTuto's shared API.
 import type { Express } from 'express'
-import { GoogleGenAI, ThinkingLevel } from '@google/genai'
+import { GoogleGenAI } from '@google/genai'
 import { registerBookReferenceMediaRoute } from './bookReferenceMedia'
 import { registerBookAgentRoute } from './bookAgent'
 
@@ -17,7 +18,7 @@ function errorMessage(error: unknown): string {
 }
 
 function lowThinking(model: string) {
-  return model.startsWith('gemini-3') ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } } : {}
+  return getOptionalThinkingConfig(model)
 }
 
 export function registerBookKnowledgeRoutes(app: Express, ai: GoogleGenAI, defaultModel: string): void {

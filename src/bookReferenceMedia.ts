@@ -1,5 +1,6 @@
+import { getOptionalThinkingConfig } from './modelThinking.ts'
 import type { Express } from 'express'
-import { GoogleGenAI, ThinkingLevel, type Part } from '@google/genai'
+import { GoogleGenAI, type Part } from '@google/genai'
 
 export interface ReferenceMedia {
   id: string
@@ -134,7 +135,7 @@ function jsonConfig(model: string, schema: unknown) {
   return {
     responseMimeType: 'application/json', responseJsonSchema: schema,
     maxOutputTokens: 1200, httpOptions: { timeout: 12_000 },
-    ...(model.startsWith('gemini-3') ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } } : {}),
+    ...(getOptionalThinkingConfig(model)),
   }
 }
 
